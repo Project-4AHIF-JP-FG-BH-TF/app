@@ -1,0 +1,52 @@
+services:
+  db:
+    image: postgres:14.1-alpine
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=loggaroo
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d loggaroo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  node:
+    build: https://github.com/Project-4AHIF-JP-FG-BH-TF/node-backend.git
+    ports:
+      - 8081:8080
+    env_file:
+      - node-backend.env
+    depends_on:
+      db:
+        condition: service_healthy
+    links:
+      - db:database
+
+  rust:
+    build: https://github.com/Project-4AHIF-JP-FG-BH-TF/rust-backend.git
+    ports:
+      - 8082:8080
+    environment:
+      - SQLX_OFFLINE=true
+    env_file:
+      - rust-backend.env
+    depends_on:
+      db:
+        condition: service_healthy
+    links:
+      - db:database
+
+  frontend:
+    build: https://github.com/Project-4AHIF-JP-FG-BH-TF/frontend.git
+    ports:
+      - 8080:3000
+
+volumes:
+  db:
+    driver: local
