@@ -2,12 +2,20 @@
 
 The easiest way to run **Loggaroo** is via the `compose.yml` in this repo.
 
-To start the `compose.yml` you will need docker in case you do not have docker installed yet please follow [this tutorial](https://docs.docker.com/engine/install/).
+To start the `compose.yml` you will need docker in case you do not have docker installed yet please
+follow [this tutorial](https://docs.docker.com/engine/install/).
 
 Once you have docker installed simply run the command
 
 ```bash
 docker compose up
+```
+
+In case you already have run **Loggaroo** once use
+
+```bash
+docker compose down -v
+docker compose up --build
 ```
 
 this will start up all services including node-backend, rust-backend, frontend and a database.
